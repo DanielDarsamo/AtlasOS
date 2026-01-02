@@ -1,0 +1,280 @@
+﻿Product Requirements Document (PRD)
+1. Product Overview
+Product Name (Working Title): Atlas OS
+Product Type: Universal Goal Execution, Habit Tracking, and Personal Analytics Platform
+Problem Statement:People of all backgrounds, genders, and life stages struggle with consistency, not ambition. Existing productivity and habit apps are either overly generic, rigid, or motivational without structure. They fail to adapt to individual goals, lifestyles, energy levels, and constraints.
+Solution:Atlas OS is a universal, adaptive execution system designed for any user (male, female, any background) whose objective is to build consistency, execute goals, and develop disciplined habits. The platform combines structured planning, habit tracking, AI-assisted breakdowns, and behavioral analytics to guide users from intent to sustained action.
+Atlas OS adapts to the user, not the other way around.
+
+2. Target Users
+Universal User Scope
+Atlas OS is designed to accommodate any user, regardless of gender, background, profession, or life stage. The system adapts to the user, not the other way around.
+Primary User Profiles
+    • Individuals seeking consistency and discipline
+    • Students managing academic goals
+    • Professionals managing career, health, and personal growth
+    • Entrepreneurs and founders
+    • Fitness and wellness-focused users
+User Intent (Core)
+    • Build consistency
+    • Track and execute goals
+    • Form and sustain habits
+    • Increase discipline
+    • Achieve long-term objectives through structured execution
+
+3. Core Value Proposition
+    • Execution over motivation
+    • Systems over willpower
+    • Feedback over blind consistency
+Atlas OS does not ask what you want to do. It shows what you actually do, why you fail, and how to correct it.
+
+4. Key Features
+4.1 User Profile & Personal Context Engine
+Description:A personalized profile system that allows users to define who they are and what they are optimizing for.
+Profile Attributes:
+    • Age range (optional)
+    • Gender (optional)
+    • Primary life focus (career, study, health, balance, mixed)
+    • Energy patterns (self-reported)
+    • Preferred difficulty level
+    • Time availability per day
+Purpose:Used by the planning and AI engines to generate realistic, personalized plans.
+
+4.2 Goal Architecture System
+Description:A structured, hierarchical goal framework adaptable to any life domain.
+Capabilities:
+    • Long-term vision
+    • Annual goals
+    • Quarterly roadmaps
+    • Monthly plans
+    • Weekly execution blocks
+    • Daily non-negotiables
+Rules:
+    • Every goal must map to executable steps
+    • Orphan goals are flagged
+
+4.3 Quarterly Roadmap Builder
+Description:A visual and logical roadmap system for quarterly goals.
+Capabilities:
+    • Milestone definition
+    • Timeline visualization
+    • Weekly effort distribution
+    • Risk and buffer detection
+
+4.4 Habit Engine
+Description:Flexible habit tracking for any user type.
+Capabilities:
+    • Binary habits
+    • Quantitative habits
+    • Frequency-based habits
+    • Streaks and consistency metrics
+    • Habit stacking and dependencies
+
+4.5 AI Goal Breakdown & Guidance Engine
+Description:AI-assisted system that converts objectives into executable action.
+Capabilities:
+    • Breaks high-level goals into steps, habits, and milestones
+    • Suggests realistic timelines
+    • Generates weekly execution plans
+    • Provides adaptive guidance based on performance
+Guardrails:
+    • AI suggestions are editable
+    • Execution data always overrides assumptions
+
+4.6 Execution & Consistency Scoring
+Description:Quantifies discipline and follow-through.
+Metrics:
+    • Daily execution score
+    • Weekly consistency index
+    • Quarterly adherence rate
+
+4.7 Behavioral Analytics & Trend Detection
+Description:Detects behavioral patterns across all users.
+Insights:
+    • Drop-off trends
+    • Overcommitment signals
+    • Time-of-day effectiveness
+    • Consistency decay warnings
+
+4.8 Failure, Recovery & Discipline Support
+Description:Normalizes failure and reinforces recovery.
+Features:
+    • Missed-goal analysis
+    • Recovery plans
+    • Discipline reinforcement prompts
+
+4.9 Accountability & Optional Social Layer
+Description:Optional accountability without forced socialization.
+Modes:
+    • Solo
+    • Partner
+    • Group
+
+5. User Flow (High-Level)
+    1 User defines long-term vision
+    2 Breaks vision into goals and habits
+    3 Executes daily tasks
+    4 System tracks behavior automatically
+    5 Analytics engine detects patterns
+    6 System suggests corrections
+    7 User adapts and continues execution loop
+
+6. Non-Functional Requirements
+    • Offline-first architecture
+    • Fast interaction (<100ms UI latency)
+    • Secure data encryption (at rest and in transit)
+    • GDPR-compliant data handling
+    • Data export (CSV / JSON)
+
+7. System Design – Database Schema (Core)
+This schema is execution-first, analytics-ready, and AI-compatible. It is normalized for correctness and designed to support future ML layers.
+
+7.1 Users
+users
+    • id (UUID, PK)
+    • email (unique)
+    • password_hash
+    • created_at
+    • timezone
+    • locale
+    • onboarding_completed (bool)
+
+7.2 User Profiles & Context
+user_profiles
+    • user_id (FK → users.id)
+    • display_name
+    • gender (optional)
+    • age_range (optional)
+    • primary_focus (career, study, health, mixed)
+    • daily_time_budget_minutes
+    • preferred_difficulty (low / medium / high)
+    • energy_pattern (morning / mixed / evening)
+
+7.3 Goals
+goals
+    • id (UUID, PK)
+    • user_id (FK)
+    • title
+    • description
+    • domain (health, career, finance, personal, custom)
+    • level (vision, annual, quarterly, monthly)
+    • parent_goal_id (self FK, nullable)
+    • start_date
+    • end_date
+    • status (active, paused, completed, abandoned)
+    • created_at
+
+7.4 Quarterly Roadmaps & Milestones
+milestones
+    • id (UUID, PK)
+    • goal_id (FK)
+    • title
+    • target_date
+    • order_index
+    • status (pending, completed, missed)
+
+7.5 Habits
+habits
+    • id (UUID, PK)
+    • user_id (FK)
+    • linked_goal_id (FK, nullable)
+    • title
+    • habit_type (binary, quantitative, frequency)
+    • target_value (nullable)
+    • frequency_rule (daily, weekly, custom)
+    • difficulty_rating (1–5)
+    • is_active
+    • created_at
+
+7.6 Habit Dependencies (Optional)
+habit_dependencies
+    • habit_id (FK)
+    • depends_on_habit_id (FK)
+
+7.7 Execution Logs (Source of Truth)
+execution_logs
+    • id (UUID, PK)
+    • user_id (FK)
+    • habit_id (FK, nullable)
+    • goal_id (FK, nullable)
+    • execution_date
+    • actual_value (nullable)
+    • completed (bool)
+    • context_tag (normal, bad_day, recovery)
+    • created_at
+
+7.8 Failure & Recovery Tracking
+failure_events
+    • id (UUID, PK)
+    • user_id (FK)
+    • related_goal_id (FK, nullable)
+    • failure_type (discipline, energy, environment, emotional)
+    • notes
+    • created_at
+
+7.9 Analytics & Scores (Derived Data)
+execution_scores
+    • id (UUID, PK)
+    • user_id (FK)
+    • date
+    • daily_score
+    • consistency_index
+    • calculated_at
+
+7.10 AI Planning Artifacts
+ai_plans
+    • id (UUID, PK)
+    • user_id (FK)
+    • goal_id (FK)
+    • generated_steps (JSONB)
+    • confidence_score
+    • accepted_by_user (bool)
+    • created_at
+
+7.11 Design Principles
+    • execution_logs are immutable
+    • analytics tables are rebuildable
+    • AI outputs are suggestions, not truth
+    • user behavior always overrides planning assumptions
+
+8. Monetization Strategy
+    • Free Tier: Basic habit tracking and goals
+    • Pro Tier: Analytics, trends, execution scores
+    • Coach Tier: Multi-user dashboards
+
+9. MVP Scope
+Must Have:
+    • Goal hierarchy
+    • Habit tracking
+    • Execution score
+    • Weekly analytics
+Nice to Have:
+    • Accountability groups
+    • Recovery protocols
+Out of Scope (MVP):
+    • AI coaching chat
+    • Wearable integration
+
+10. Success Metrics
+    • Weekly Active Users (WAU)
+    • Habit completion rate improvement
+    • Goal completion rate
+    • User retention (30/90 days)
+    • Average execution score trend
+
+11. Risks & Mitigations
+Risk: User overwhelm
+    • Mitigation: Progressive feature unlocks
+Risk: Data overload
+    • Mitigation: Insight prioritization engine
+Risk: False analytics
+    • Mitigation: Conservative thresholds and user validation
+
+12. Long-Term Vision
+Atlas OS becomes a universal execution platform for human discipline.
+Long-term evolution includes:
+    • Deeper AI-guided planning
+    • Cross-domain goal intelligence (health, career, finance)
+    • Predictive consistency modeling
+    • Coach and mentor dashboards
+The core mission remains unchanged: help any user reliably execute on what matters to them.

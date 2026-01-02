@@ -1,0 +1,127 @@
+﻿Atlas OS — MVP API Design
+This document outlines the MVP API design for Atlas OS. It covers REST and GraphQL endpoints, request/response structure, and core logic needed for goal execution, habit tracking, and AI planning.
+
+1. Design Principles
+    1 Modular & Scalable — Each endpoint serves a single responsibility.
+    2 REST for standard CRUD operations; GraphQL for flexible queries and AI-driven data aggregation.
+    3 Authentication & Authorization — JWT-based auth.
+    4 Versioning — /api/v1/... for REST, v1 for GraphQL schema.
+    5 Immutable execution logs — Users cannot alter historical data.
+
+2. REST API Endpoints
+2.1 User & Profile
+Endpoint	Method	Description
+/api/v1/users/register	POST	Create new user account
+/api/v1/users/login	POST	Authenticate user and return JWT
+/api/v1/users/me	GET	Get current user profile
+/api/v1/users/me	PUT	Update profile (energy pattern, difficulty, preferences)
+2.2 Goals
+Endpoint	Method	Description
+/api/v1/goals	GET	List all user goals
+/api/v1/goals	POST	Create a new goal
+/api/v1/goals/{goalId}	GET	Get goal details, milestones, linked habits
+/api/v1/goals/{goalId}	PUT	Update goal attributes
+/api/v1/goals/{goalId}	DELETE	Archive goal
+2.3 Milestones
+Endpoint	Method	Description
+/api/v1/goals/{goalId}/milestones	POST	Add milestone to goal
+/api/v1/milestones/{milestoneId}	PUT	Update milestone
+/api/v1/milestones/{milestoneId}	DELETE	Remove milestone
+2.4 Habits
+Endpoint	Method	Description
+/api/v1/habits	GET	List all habits
+/api/v1/habits	POST	Create new habit
+/api/v1/habits/{habitId}	GET	Habit detail, history, linked goal
+/api/v1/habits/{habitId}	PUT	Update habit attributes
+/api/v1/habits/{habitId}	DELETE	Archive habit
+2.5 Execution Logs
+Endpoint	Method	Description
+/api/v1/logs	GET	Fetch execution logs (filterable by date)
+/api/v1/logs	POST	Log habit execution (immutable)
+/api/v1/logs/{logId}	GET	Fetch single execution log
+2.6 Failure Events
+Endpoint	Method	Description
+/api/v1/failures	GET	List failure events
+/api/v1/failures	POST	Log a failure event
+/api/v1/failures/{failureId}	GET	Get failure detail
+2.7 Execution Scores
+Endpoint	Method	Description
+/api/v1/scores/daily	GET	Get daily execution score for user
+/api/v1/scores/weekly	GET	Get weekly consistency index
+2.8 AI Plans
+Endpoint	Method	Description
+/api/v1/ai/plans	GET	List AI-generated plans
+/api/v1/ai/plans/{planId}	GET	Get plan details
+/api/v1/ai/plans/{planId}/accept	POST	Accept AI plan steps
+/api/v1/ai/plans	POST	Request new AI plan generation
+
+3. GraphQL Schema (v1)
+Query Examples:
+query UserDashboard($userId: ID!) {
+  user(id: $userId) {
+    profile {
+      displayName
+      energyPattern
+      difficultyPreference
+    }
+    goals {
+      id
+      title
+      progress
+      milestones {
+        title
+        status
+      }
+    }
+    habits(todayOnly: true) {
+      id
+      title
+      completed
+      executionScore
+    }
+    executionScores(period: "weekly") {
+      dailyScores
+      weeklyConsistencyIndex
+    }
+    aiPlans(activeOnly: true) {
+      id
+      generatedSteps {
+        stepId
+        description
+        priorityScore
+      }
+    }
+  }
+}
+Mutation Examples:
+mutation LogHabitExecution($userId: ID!, $habitId: ID!, $completed: Boolean!, $contextTag: String) {
+  logExecution(input: {
+    userId: $userId,
+    habitId: $habitId,
+    completed: $completed,
+    contextTag: $contextTag
+  }) {
+    success
+    executionScore
+  }
+}
+
+mutation AcceptAIPlan($planId: ID!) {
+  acceptPlan(input: { planId: $planId }) {
+    success
+    stepsAccepted
+  }
+}
+
+4. Authentication & Authorization
+    • JWT tokens for REST & GraphQL
+    • Role-based access (user/admin)
+    • All mutation endpoints require valid token
+    • Execution logs are immutable; only creation allowed, no updates or deletions
+
+5. Notes
+    1 REST handles CRUD-heavy operations.
+    2 GraphQL enables dashboard aggregation, AI plan queries, and complex filtering.
+    3 All endpoints are versioned for future-proofing.
+    4 Backend handles computation of execution_scores on event triggers.
+    5 AI endpoints integrate with event flow and execution scoring for planning suggestions.

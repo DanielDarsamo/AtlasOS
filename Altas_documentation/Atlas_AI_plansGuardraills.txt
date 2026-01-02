@@ -1,0 +1,92 @@
+﻿Atlas OS — AI Planning Logic
+This document outlines the AI Planning Logic for Atlas OS, including prompt structure, guardrails, and integration with execution scoring. The AI acts as a planner and analyst, providing actionable guidance without overriding user autonomy.
+
+1. AI Role
+    1 Break user goals into actionable steps.
+    2 Suggest habit and milestone prioritization.
+    3 Generate quarterly roadmaps.
+    4 Detect patterns in execution, failure, and recovery.
+    5 Recommend adjustments based on consistency and overload.
+Important: AI suggestions are advisory only; user behavior always overrides AI decisions.
+
+2. Input Data for AI
+The AI receives structured data from the system:
+Data Type	Purpose
+User Profile	Determine user focus, energy pattern, difficulty preference
+Goals & Milestones	Understand objectives and deadlines
+Habits & Execution Logs	Identify patterns, streaks, failures, recovery events
+Execution Scores	Measure current consistency, recovery, and overload risk
+Past AI Plans	Learn previous accepted/rejected steps
+All data is normalized before passing to AI.
+
+3. Prompt Structure
+Prompts follow a structured template to maximize clarity and usefulness.
+3.1 Goal Breakdown Prompt
+User: {user_name}, Profile: {user_profile_summary}
+Goal: {goal_title} - {goal_description}
+Milestones: {milestone_list}
+Current Execution Patterns: {execution_summary}
+Constraints: {daily_time_budget}, {preferred_difficulty}, {energy_pattern}
+
+Task: Break this goal into actionable, measurable steps and suggest associated habits. Steps should be realistic, prioritize high-impact actions, and fit the user constraints.
+Output Format: JSON array of steps with fields [step_id, description, linked_habit_ids, suggested_frequency, estimated_duration_minutes, priority_score]
+3.2 Quarterly Roadmap Prompt
+User: {user_name}, Profile: {user_profile_summary}
+All Active Goals: {active_goals}
+Execution Scores: {last_90_days_execution_scores}
+
+Task: Generate a quarterly roadmap aligning high-priority goals, evenly distributing workload, ensuring user capacity is not exceeded, and providing suggested milestones.
+Output Format: JSON array of quarters with goals, milestones, step breakdowns, and estimated completion dates.
+3.3 Recovery/Adjustment Prompt
+User: {user_name}, Profile: {user_profile_summary}
+Recent Failures: {failure_events_summary}
+Recent Execution Scores: {last_30_days_execution_scores}
+
+Task: Recommend recovery actions, habit reprioritization, or roadmap adjustments to maximize future consistency and avoid overload.
+Output Format: JSON object with recommended changes, priority scores, and suggested habit adjustments.
+
+4. Guardrails
+    1 Autonomy First
+        ◦ AI can only suggest; execution_logs remain immutable.
+    2 Overload Prevention
+        ◦ AI must respect daily_time_budget, habit difficulty, and current WCI.
+    3 Recovery-Sensitive
+        ◦ Prioritize recovery actions after failure events before generating new tasks.
+    4 Actionable Steps Only
+        ◦ No vague advice, only measurable steps with clear metrics.
+    5 Domain-Agnostic
+        ◦ Suggestions must work across health, study, finance, personal, or custom goals.
+    6 Temporal Relevance
+        ◦ Avoid scheduling past events; all plans are forward-looking.
+    7 Explainability
+        ◦ AI outputs must include confidence scores and rationale for each step.
+
+5. Output Format
+All AI suggestions are stored in the ai_plans table as JSONB:
+{
+  "goal_id": "uuid",
+  "generated_steps": [
+    {
+      "step_id": "uuid",
+      "description": "Step description",
+      "linked_habit_ids": ["uuid"],
+      "suggested_frequency": "daily/weekly/custom",
+      "estimated_duration_minutes": 30,
+      "priority_score": 0.85
+    }
+  ],
+  "confidence_score": 0.9,
+  "accepted_by_user": false,
+  "created_at": "2025-12-30T00:00:00Z"
+}
+
+6. Integration Points
+    • Execution Scores: AI uses consistency and overload metrics to adapt step suggestions.
+    • Event Flow: AI recommendations are triggered by streak breaks, missed execution, or overload detection.
+    • User Acceptance: Each plan must be approved by the user; system tracks acceptance for learning.
+
+7. AI Feedback Loop
+    1 Track user acceptance and completion of AI steps.
+    2 Update AI confidence scores based on historical adherence.
+    3 Feed AI with pattern data for next iteration of planning.
+This loop ensures AI improves relevance and adapts to individual user behavior over time.

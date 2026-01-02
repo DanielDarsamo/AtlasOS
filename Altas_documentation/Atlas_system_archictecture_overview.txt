@@ -1,0 +1,60 @@
+﻿Atlas OS — System Architecture
+This document describes the system architecture    for Atlas OS. It provides a high-level blueprint for building a scalable, modular, and maintainable application.
+
+1. System Architecture Overview
+Atlas OS is designed as a full-stack, modular application with the following layers:
+1.1 Frontend
+    • Purpose: User interface for dashboards, habit logging, AI suggestions, analytics, and notifications.
+    • Tech Stack: Next.js 14+, TypeScript, Tailwind CSS, ShadCN UI.
+    • Responsibilities:
+        ◦ Rendering UX flows and screens.
+        ◦ Sending user actions to backend via REST/GraphQL.
+        ◦ Displaying real-time execution scores and AI suggestions.
+        ◦ Managing user authentication & session state.
+1.2 Backend / API Layer
+    • Purpose: Handle business logic, data processing, AI integrations, and event flows.
+    • Tech Stack: Node.js / NestJS or FastAPI (Python), Postgres, Redis (caching), Supabase for auth and real-time updates.
+    • Responsibilities:
+        ◦ REST API for CRUD operations.
+        ◦ GraphQL for aggregated queries and AI dashboard data.
+        ◦ Compute execution scores, consistency, recovery modifiers.
+        ◦ Manage AI planning requests and learning loops.
+        ◦ Event-driven architecture for streaks, overload, and recovery.
+1.3 Database Layer
+    • Purpose: Persistent data storage for users, goals, habits, execution logs, failure events, and AI plans.
+    • Tech Stack: PostgreSQL (primary), Redis (for caching / real-time data).
+    • Responsibilities:
+        ◦ Immutable logging of execution events.
+        ◦ Derived tables for execution scores and analytics.
+        ◦ Store AI-generated plans.
+        ◦ Ensure relational integrity and enforce constraints.
+1.4 AI Module
+    • Purpose: Provide planning, recovery suggestions, and habit optimization.
+    • Integration:
+        ◦ Receives structured user and goal data.
+        ◦ Returns JSON-formatted actionable steps.
+        ◦ Updates learning loops based on user acceptance.
+    • Technologies: OpenAI API / custom NLP models.
+1.5 Event & Scheduler Layer
+    • Purpose: Trigger recalculations, streak evaluation, overload detection, and notifications.
+    • Responsibilities:
+        ◦ Compute daily execution scores.
+        ◦ Monitor streaks and recovery actions.
+        ◦ Generate notifications / AI prompts.
+    • Tech Stack: Cron jobs, worker queues (BullMQ, Celery, or RabbitMQ).
+1.6 Notification System
+    • Purpose: Push notifications, email alerts, in-app reminders.
+    • Responsibilities:
+        ◦ Notify users of missed habits, streak breaks, overload warnings.
+        ◦ Provide links to actionable screens.
+    • Tech Stack: Firebase Cloud Messaging, Email service provider.
+
+
+ Notes
+    • Frontend is entirely decoupled from backend logic; only consumes APIs.
+    • Backend is modular, separating controllers, services, and event handlers.
+    • AI Module is isolated for easier upgrades or swapping models.
+    • Workers handle computation-heavy or scheduled tasks asynchronously.
+    • Database migrations and seeds ensure reproducible environments.
+    • Tests are structured by domain to cover unit, integration, and end-to-end flows.
+This architecture ensures scalability, maintainability, and clear separation of concerns, supporting all core Atlas OS functionalities from execution tracking to AI-guided planning.

@@ -1,0 +1,40 @@
+﻿/atlas-os
+|-- /frontend
+| |-- /components # Reusable UI components
+| |-- /pages # Next.js pages
+| |-- /styles # Tailwind or global styles
+| |-- /hooks # Custom React hooks
+| |-- /utils # Frontend utilities
+| |-- /services # API call abstractions
+|
+|-- /backend
+| |-- /src
+| |-- /controllers # REST/GraphQL controllers
+| |-- /services # Business logic, scoring, AI integration
+| |-- /models # DB models / ORM entities
+| |-- /repositories # DB queries / data access layer
+| |-- /events # Event flow handlers (streaks, recovery, overload)
+| |-- /middlewares # Auth, logging, error handling
+| |-- /routes # API routes mapping
+| |-- /utils # Backend utilities, validation, scoring logic
+| |-- /workers # Background jobs, cron tasks, AI processing
+|
+|-- /database
+| |-- /migrations # Schema migration scripts
+| |-- /seeders # Seed data for dev/testing
+| |-- schema.sql # Complete schema reference
+|
+|-- /ai
+| |-- /prompts # Prompt templates for AI planning
+| |-- /services # AI call abstractions, plan generators
+|
+|-- /tests
+| |-- /frontend
+| |-- /backend
+| |-- /integration
+|
+|-- package.json
+|-- tsconfig.json
+|-- .env
+|-- README.md
+

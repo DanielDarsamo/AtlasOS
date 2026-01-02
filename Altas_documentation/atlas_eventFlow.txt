@@ -1,0 +1,96 @@
+﻿Atlas OS — Event Flow Design
+This document describes event-driven behaviors within Atlas OS. It defines the system's response when users encounter disruptions, such as missing days, breaking streaks, or overcommitting. The flow ensures consistency, recovery, and data-driven insights.
+
+1. Event Types
+    1 Missed Execution: User fails to complete a scheduled habit or goal step.
+    2 Streak Break: User's consecutive streak falls below the minimum threshold.
+    3 Overload Detection: User plans more than their capacity, risking burnout.
+    4 Recovery Action: User performs actions to compensate for a missed execution.
+    5 Failure Event: A logged incident where execution was impeded by discipline, energy, environment, or emotional factors.
+
+2. Event Flow Overview
+The Atlas OS event system operates in real-time and batch analytics. Events trigger both user-facing feedback and backend recalculations.
+    1 Event detected → Log created in execution_logs or failure_events
+    2 Compute Daily Execution Score
+    3 Update streaks, consistency, and recovery status
+    4 Trigger notifications or AI suggestions
+    5 Adjust future planning if needed
+
+3. Missed Execution Flow
+Trigger: Habit scheduled but completed = false for the day
+Steps:
+    1 Log event in execution_logs (context_tag = 'normal' or 'bad_day')
+    2 Check streaks:
+        ◦ If streak threshold broken → mark streak break
+    3 Update execution_scores:
+        ◦ ER decreases
+        ◦ DES recalculated with CM and RM
+    4 Notify user:
+        ◦ Friendly reminder
+        ◦ Optional recovery suggestion from AI
+    5 If repeated misses → flag overcommitment risk
+Outcome: Daily execution score reflects missed activity; streak may be affected; AI can suggest habit reprioritization.
+
+4. Streak Break Flow
+Trigger: Streak of consecutive successful days is broken
+Steps:
+    1 Identify affected habits/goals
+    2 Log streak break in analytics table
+    3 Apply CM recalculation:
+        ◦ CM decreases → affects DES
+    4 Optional notification:
+        ◦ AI-generated encouragement
+        ◦ Recovery actions suggested
+    5 Update WCI for weekly trend analysis
+Outcome: Users understand disruption impact; system maintains historical data for longitudinal insights.
+
+5. Overload Detection Flow
+Trigger: Daily commitment load (CL) exceeds user capacity or recent WCI decline indicates stress
+Steps:
+    1 Compute daily CL vs user daily_time_budget_minutes
+    2 Identify high-risk habits for potential skipping
+    3 Flag overload in backend
+    4 Notify user with AI recommendations:
+        ◦ Prioritize essential habits
+        ◦ Adjust roadmap/milestones
+    5 Adjust scoring penalties if overload persists
+Outcome: Prevents burnout, maintains realistic execution scores, enables proactive intervention.
+
+6. Recovery Action Flow
+Trigger: User completes recovery habit after a missed execution
+Steps:
+    1 Log execution with context_tag = 'recovery'
+    2 Update execution_scores:
+        ◦ RM increases → higher DES
+    3 AI adapts future plan based on recovery patterns
+    4 Notify user of successful rebound
+Outcome: Rewards user for correcting behavior; reinforces disciplined recovery culture.
+
+7. Failure Event Logging Flow
+Trigger: User logs a failure event in the system
+Steps:
+    1 Log in failure_events with type (discipline, energy, environment, emotional)
+    2 Trigger RM modifier recalculation for the day
+    3 Track frequency and pattern of failure types
+    4 AI generates insights for trend correction:
+        ◦ Overcommitting habits
+        ◦ Time-of-day inefficiencies
+        ◦ Recurring environment issues
+Outcome: System captures context behind missed execution; enhances AI recommendation relevance.
+
+8. AI Integration in Event Flows
+    • Missed Execution: Suggest habit stacking, micro-goals, or adjusted difficulty
+    • Streak Break: Recommend realistic streak recovery strategies
+    • Overload: Propose habit pruning or reshuffling of roadmap
+    • Recovery: Reinforce behavioral feedback loops
+    • Failure Analysis: Detect recurring patterns and generate weekly guidance
+
+9. Summary Table of Event Responses
+Event Type	System Action	Score Impact	AI Action	User Feedback
+Missed Execution	Log in execution_logs	ER ↓, DES ↓	Suggest recovery or micro-adjust	Notification, reminder
+Streak Break	Update streak, recalc CM	CM ↓, DES ↓	Suggest realistic streak rebuilding	Notification, encouragement
+Overload	Flag user, recalc CL	Potential score penalty	Recommend reprioritization	Warning, recommendation
+Recovery Action	Log as recovery	RM ↑, DES ↑	Adjust future planning	Positive reinforcement
+Failure Event	Log in failure_events	RM ↓ or ↑ (depending on recovery)	Trend analysis, pattern detection	Contextual insights
+
+This event flow design ensures Atlas OS remains behavior-driven, proactive, and adaptive, supporting any user in consistent execution, recovery, and long-term discipline.

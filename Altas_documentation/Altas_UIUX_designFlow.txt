@@ -1,0 +1,132 @@
+﻿Atlas OS — UX Flow Mapping
+This document outlines the UX flows and screen logic for Atlas OS. It serves as a blueprint for building the interface and mapping user interactions before creating Figma designs.
+
+1. Core Principles
+    1 Behavior-first: Prioritize user actions and execution visibility.
+    2 Minimal friction: Reduce steps to log habits or view progress.
+    3 Adaptive feedback: Show real-time progress, streaks, and recovery suggestions.
+    4 AI-guided assistance: Contextual AI recommendations integrated seamlessly.
+    5 Scalability: Supports any user goal domain and habit type.
+
+2. Screen Flows
+2.1 Onboarding & Profile Setup
+Screens:
+    1 Welcome / Introduction
+    2 User Registration / Login
+    3 User Profile Setup:
+        ◦ Name, gender, age range
+        ◦ Focus area (career, health, study, personal, custom)
+        ◦ Daily time budget & energy pattern
+        ◦ Difficulty preference
+    4 Goal Setup:
+        ◦ Primary goal input
+        ◦ Milestones & high-level roadmap
+Logic:
+    • After registration, prompt for profile setup
+    • Validate required fields
+    • AI suggests initial step breakdown for first goal
+    • Redirect to dashboard
+
+2.2 Dashboard / Home Screen
+Screens:
+    1 Overview of today’s habits & goals
+    2 Execution Score / Daily DES
+    3 Streak overview
+    4 Quick actions: Log habit, mark recovery, view AI suggestions
+    5 Notifications / alerts (missed habit, overload, recovery recommendation)
+Logic:
+    • Pull execution_logs and execution_scores for the day
+    • Highlight habits due today with priority indicators
+    • Show AI-suggested steps inline
+    • Click on habit → log completion or mark as missed
+    • Click on score → show trend graph & streak breakdown
+
+2.3 Goal & Habit Management
+Screens:
+    1 List of Goals (filterable by domain, status)
+    2 Goal Detail:
+        ◦ Description, milestones, progress bar
+        ◦ Linked habits
+        ◦ AI step suggestions
+    3 Habit Detail:
+        ◦ Frequency, difficulty, execution history
+        ◦ Option to adjust or archive habit
+Logic:
+    • CRUD for goals and habits
+    • Link/unlink habits to goals
+    • AI suggestions can be applied or ignored
+    • Milestone completion auto-updates goal progress
+
+2.4 Execution Logging Flow
+Screens:
+    1 Habit List for Today
+    2 Log Completion Screen
+    3 Optional: Add notes or context tag (normal, bad_day, recovery)
+Logic:
+    • Select habit → mark complete/incomplete
+    • If missed, system triggers recovery suggestion
+    • Update execution_logs immutably
+    • Recompute execution_scores and streaks
+
+2.5 Analytics & Insights
+Screens:
+    1 Daily Execution Score & trend graph
+    2 Weekly Consistency Index (WCI)
+    3 Habit completion trends (heatmap)
+    4 AI Insights & Recommendations
+    5 Overload alerts and recovery tracking
+Logic:
+    • Fetch historical execution data
+    • Compute streaks, WCI, volatility
+    • Highlight patterns of missed execution, recovery, or overload
+    • AI provides actionable suggestions per insight
+
+2.6 AI Planning & Guidance
+Screens:
+    1 AI Suggested Steps for Goal
+    2 Quarterly Roadmap Preview
+    3 Habit Reprioritization & Recovery Suggestions
+Logic:
+    • Show AI-generated steps as actionable cards
+    • Allow user to accept, edit, or ignore each suggestion
+    • Accepted steps automatically added to daily habits or milestone list
+    • Track acceptance for AI learning
+
+2.7 Notifications & Alerts
+Screens:
+    1 Missed Habit Alert
+    2 Streak Break Notification
+    3 Overload Warning
+    4 Recovery Reminder
+    5 AI Suggested Plan Update
+Logic:
+    • Triggered by event flows
+    • Links directly to dashboard, habit logging, or AI suggestion screen
+    • User can snooze, dismiss, or act immediately
+
+2.8 Settings & Profile
+Screens:
+    1 Profile Settings (personal info, energy pattern, difficulty preference)
+    2 Notification Preferences
+    3 Goal & Habit Defaults
+    4 AI Plan Preferences
+    5 Data & Privacy
+Logic:
+    • All preferences reflected in AI recommendations and scheduling
+    • Changes update backend in real-time
+
+3. Flow Diagram (Text-Based)
+Onboarding --> Dashboard --> [Daily Habits Logging]
+                     |--> Goal & Habit Management --> Dashboard
+                     |--> Analytics & Insights --> Dashboard
+                     |--> AI Planning --> Dashboard
+                     |--> Notifications & Alerts --> Dashboard
+Settings --> Dashboard
+This flow ensures centralized dashboard navigation with minimal friction, quick logging, AI guidance, and clear visibility into performance trends.
+
+4. Notes
+    • Every screen connects back to Dashboard for consistency.
+    • AI-driven screens are optional; users can ignore suggestions.
+    • Notifications are actionable, linking to relevant screens.
+    • Execution data is always immutable; users can see history but cannot edit past logs.
+This UX mapping serves as a foundation for wireframes, Figma, and eventual front-end implementation.
